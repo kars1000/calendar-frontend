@@ -15,8 +15,15 @@ import {
   endOfMonth,
   isSameDay,
   isSameMonth,
-  addHours
+  addHours,
+
 } from 'date-fns';
+
+
+
+
+
+
 import { Subject } from 'rxjs/Subject';
 
 const colors: any = {
@@ -44,6 +51,8 @@ export class AppComponent {
   viewDate = new Date();
   events =[]
   refresh: Subject<any> = new Subject();
+  view: string = 'month';
+
 
   constructor(private http: Http) {
 
@@ -52,11 +61,14 @@ export class AppComponent {
 
   }
 
+
+
   test(name : string) {
     this.http.get('/yo').map(response => response).toPromise().then((response) => {
       console.info(response);
     });
   }
+
 
 
   dayClicked(date: Date, events: CalendarEvent[]): void {
