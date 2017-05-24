@@ -1,5 +1,5 @@
 import { Http } from '@angular/http';
-import { Component, ChangeDetectionStrategy, ViewChild, TemplateRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ViewChild, TemplateRef, OnInit } from '@angular/core';
 
 
 import {
@@ -47,25 +47,42 @@ const colors: any = {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   viewDate = new Date();
-  events =[]
+  events = [];
   refresh: Subject<any> = new Subject();
-  view: string = 'month';
+  view = 'month';
 
 
   constructor(private http: Http) {
 
-
-
-
   }
 
+
+  ngOnInit() {
+
+    this.getEventsFromServer();
+  }
 
 
   test(name : string) {
     this.http.get('/yo').map(response => response).toPromise().then((response) => {
-      console.info(response);
+    //  console.info(response);
+    });
+  }
+
+
+  getEventsFromServer() {
+    this.events.push({
+      title: 'KARIM',
+      start: startOfDay(new Date()),
+      end: endOfDay(new Date()),
+      color: colors.red,
+      draggable: true,
+      resizable: {
+        beforeStart: true,
+        afterEnd: true
+      }
     });
   }
 
@@ -74,17 +91,31 @@ export class AppComponent {
   dayClicked(date: Date, events: CalendarEvent[]): void {
 
 
-    this.events.push({
-      title: 'KARIM',
-      start: startOfDay(date),
-      end: endOfDay(date),
-      color: colors.red,
-      draggable: true,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true
+    let isDateAvailable  = true;
+
+    this.events.forEach((element, index) => {
+
+      if (element.start.getTime() === date.getTime()) {
+        isDateAvailable = false;
+       this.events.splice(index);
       }
     });
+
+
+    if (isDateAvailable) {
+      this.events.push({
+        title: 'KARIM',
+        start: startOfDay(date),
+        end: endOfDay(date),
+        color: colors.red,
+        draggable: true,
+        resizable: {
+          beforeStart: true,
+          afterEnd: true
+        }
+      });
+    }
+
     this.refresh.next();
   }
 }
